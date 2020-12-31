@@ -1,6 +1,6 @@
 package br.com.alura.forum.controllers;
 
-import br.com.alura.forum.config.security.TokenGenerateService;
+import br.com.alura.forum.config.security.TokenService;
 import br.com.alura.forum.controllers.dto.TokenDto;
 import br.com.alura.forum.controllers.form.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authManager;
     @Autowired
-    private TokenGenerateService tokenService;
+    private TokenService tokenService;
 
     @PostMapping
     public ResponseEntity<TokenDto> authenticate(@RequestBody @Valid LoginForm form) {
