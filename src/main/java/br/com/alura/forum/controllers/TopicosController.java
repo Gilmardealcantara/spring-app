@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
@@ -27,9 +28,9 @@ public class TopicosController {
     private CursonRepository cursonRepository;
 
     @GetMapping
-    public List<TopicoDto> lista(String nomeCurso){
+    public List<TopicoDto> lista(String nomeCurso) {
         List<Topico> topicos = null;
-        if(nomeCurso == null)
+        if (nomeCurso == null)
             topicos = topicoRepository.findAll();
         else
             topicos = topicoRepository.findByCursoNome(nomeCurso);
@@ -46,20 +47,30 @@ public class TopicosController {
     }
 
     @GetMapping("/{id}")
-    public DetalhesDoTopicoDto detalhar(@PathVariable long id) {
-        Topico topico = topicoRepository.getOne(id);
-        return new DetalhesDoTopicoDto(topico);
+    public ResponseEntity<DetalhesDoTopicoDto> detalhar(@PathVariable long id) {
+        Optional<Topico> optional = topicoRepository.findById(id);
+        if (optional.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(new DetalhesDoTopicoDto(optional.get()));
     }
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form){
+    public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
+        Optional<Topico> optional = topicoRepository.findById(id);
+        if (optional.isEmpty())
+            return ResponseEntity.notFound().build();
+
         Topico topico = form.atualizar(id, topicoRepository);
         return ResponseEntity.ok(new TopicoDto(topico));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable long id){
+    public ResponseEntity<?> remove(@PathVariable long id) {
+        Optional<Topico> optional = topicoRepository.findById(id);
+        if (optional.isEmpty())
+            return ResponseEntity.notFound().build();
+
         topicoRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
