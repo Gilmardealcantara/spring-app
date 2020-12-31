@@ -8,6 +8,7 @@ import br.com.alura.forum.modelo.Topico;
 import br.com.alura.forum.repository.CursonRepository;
 import br.com.alura.forum.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,8 +32,9 @@ public class TopicosController {
     private CursonRepository cursonRepository;
 
     @GetMapping
-    public Page<TopicoDto> lista(@RequestParam(required = false) String courseName, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-
+    @Cacheable(value = "topicsList")
+    public Page<TopicoDto> lista(@RequestParam(required = false) String courseName,
+                                 @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         if (courseName == null) {
             Page<Topico> pages = topicoRepository.findAll(pageable);
             return TopicoDto.converter(pages);
