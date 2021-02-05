@@ -1,16 +1,40 @@
 package br.com.alura.forum.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class AuthControllerTest {
-    @Test
-    public void test(){
+    @Autowired
+    private MockMvc mockMvc;
 
+    @Test
+    public void ShouldBeReturnBadRequestWhenInvalidLogin() throws Exception {
+        URI uri = new URI("/auth");
+        String json = "{\"email\":\"invalid@email.com\",\"senha\": \"1234\"}";
+
+        mockMvc.perform(MockMvcRequestBuilders
+            .post(uri)
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers
+                .status()
+                .is(400));
     }
 }
